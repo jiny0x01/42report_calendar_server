@@ -1,4 +1,4 @@
-package clone
+package wiki
 
 import (
 	"code.gitea.io/sdk/gitea"
