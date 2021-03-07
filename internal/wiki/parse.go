@@ -36,13 +36,20 @@ case 2:
 
 // 1day
 type ReportInfo struct {
-	Year       int      `json:"date"`  // yyyy
-	Month      int      `json:"Month"` // mm
-	Date       int      `json:"date"`  // dd
-	Day        int      `json:"day"`   // Mon: 1, Tue: 2 ... Sun: 7
-	StudyTime  int      `json:"studyTime"`
-	StudyTheme string   `json:"studyTheme"`
-	Cadet      []string `json:"cadets"`
+	Year        int      `json:"date"`  // yyyy
+	Month       int      `json:"Month"` // mm
+	Date        int      `json:"date"`  // dd
+	Day         int      `json:"day"`   // Mon: 1, Tue: 2 ... Sun: 7
+	StudyTime   int      `json:"studyTime"`
+	StudyTheme  string   `json:"studyTheme"`
+	StudyMember []string `json:"studyMember"`
+}
+
+func check(e error) {
+	if e != nil {
+		log.Println(e)
+		panic(e)
+	}
 }
 
 func (repo *ReportInfo) ParseDate(filename string) {
@@ -93,73 +100,115 @@ func StudyTimeStamp2Minute(studyTime []byte) int {
 	endTime := timeMatcher.FindAll(studyTimeStamp[1], 2)
 
 	var startHour, startMinute, endHour, endMinute int
-	if startTime[0][0] == '0' {
-		startHour, _ = strconv.Atoi(string(startTime[0][1]))
-	} else {
-		startHour, _ = strconv.Atoi(string(startTime[0]))
+	startHour, _ = strconv.Atoi(string(startTime[0]))
+	startMinute, _ = strconv.Atoi(string(startTime[1]))
+	endHour, _ = strconv.Atoi(string(endTime[0]))
+	endMinute, _ = strconv.Atoi(string(endTime[1]))
+	/*
+		if startTime[1][0] == '0' {
+			startMinute, _ = strconv.Atoi(string(startTime[1][1]))
+		} else {
+			startMinute, _ = strconv.Atoi(string(startTime[1]))
+		}
+		if endTime[0][0] == '0' {
+			endHour, _ = strconv.Atoi(string(endTime[0][1]))
+		} else {
+			endHour, _ = strconv.Atoi(string(endTime[0]))
+		}
+		if endTime[1][0] == '0' {
+			endMinute, _ = strconv.Atoi(string(endTime[1][1]))
+		} else {
+			endMinute, _ = strconv.Atoi(string(endTime[1]))
+		}
+	*/
+	if endHour < startHour {
+		endHour += 12
 	}
-	if startTime[1][0] == '0' {
-		startMinute, _ = strconv.Atoi(string(startTime[1][1]))
-	} else {
-		startMinute, _ = strconv.Atoi(string(startTime[1]))
+	totalStudyTime := ((endHour - startHour) * 60) + endMinute - startMinute
+	//	log.Printf("\n\torigin: %q\n\tstartHour: %d\n\tstartMinute: %d\n\tendHour: %d\n\tendMinute: %d\n\t totalStudyTime: %d", studyTimeStamp, startHour, startMinute, endHour, endMinute, totalStudyTime)
+	if totalStudyTime < 0 {
+		totalStudyTime = 0
 	}
-	if endTime[0][0] == '0' {
-		endHour, _ = strconv.Atoi(string(endTime[0][1]))
-	} else {
-		endHour, _ = strconv.Atoi(string(endTime[0]))
-	}
-	if endTime[1][0] == '0' {
-		endMinute, _ = strconv.Atoi(string(endTime[1][1]))
-	} else {
-		endMinute, _ = strconv.Atoi(string(endTime[1]))
-	}
-
-	log.Printf("\n\tstartHour: %d\n\tstartMinute: %d\n\tendHour: %d\n\tendMinute: %d\n", startHour, startMinute, endHour, endMinute)
-
-	totalStudyTime := (endHour*60 + endMinute) - (startHour*60 - startMinute)
-	log.Printf("\n\t totalStudyTime: %d\n", totalStudyTime)
 	return totalStudyTime
 }
 
-func (repo *ReportInfo) ParseReport(filename string) {
-	// Study Time
-	raw_data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("err: %v\n", err)
-		return
-	}
-
+func (repo *ReportInfo) ParseStudyTime(fileRawData []byte) {
 	// 24시 hh:mm ~ hh:mm
 	m := regexp.MustCompile(`\d\d?:\d\d? ?(-|~) ?\d\d?:?\d?\d?`)
-	data := m.FindAll(raw_data, -1)
-	var studyTime []string
+	data := m.FindAll(fileRawData, -1)
 	for _, d := range data {
-		log.Printf("\n\t raw time: %q", d)
-		StudyTimeStamp2Minute(d)
-		studyTime = append(studyTime, string(d))
+		//		log.Printf("\n\t raw time: %q", d)
+		repo.StudyTime += StudyTimeStamp2Minute(d)
 	}
+}
 
+func (repo *ReportInfo) ParseStudyTheme(fileRawData []byte) {
+	startMatcher := regexp.MustCompile(`학습 ? 범위 ?및 ?주제(\*|_)*`)
+	startIndex := startMatcher.FindIndex(fileRawData)
+	endMatcher := regexp.MustCompile(`(\*|_|#)*동?료? ?학습 ?방법`)
+	endIndex := endMatcher.FindIndex(fileRawData)
+	if startIndex == nil || endIndex == nil {
+		repo.StudyTheme = "undefined"
+		return
+	}
+	//	log.Printf("\t extracted data %s\n", fileRawData[startIndex[1]:endIndex[0]])
+	m := regexp.MustCompile(`(\* ?|- ?|# ?|\+ ?|\d\.|/)`)
+	repo.StudyTheme = string(m.ReplaceAll(fileRawData[startIndex[1]:endIndex[0]], []byte("")))
+	//	log.Printf("\t extracted data %s", repo.StudyTheme)
+}
+
+func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
+	startMatcher := regexp.MustCompile(`(\*|_|#)*동?료? ?학습 ?방법`)
+	startIndex := startMatcher.FindIndex(fileRawData)
+	endMatcher := regexp.MustCompile(`(\*|_|#)*학습 ?목표`)
+	endIndex := endMatcher.FindIndex(fileRawData)
+	if startIndex == nil || endIndex == nil {
+		log.Println("index is nil")
+		repo.StudyMember = nil
+		return
+	}
+	memberMatcher := regexp.MustCompile(`[a-z]{2,8}`)
+	member := memberMatcher.FindAll(fileRawData[startIndex[1]:endIndex[0]], -1)
+	if member == nil {
+		log.Println("member is nil")
+		repo.StudyMember = nil
+		return
+	}
+	for _, m := range member {
+		// 나중에 goroutine으로 처리
+		isValidMember := func(_m []byte) bool {
+			// 42 API에서 유효한 Cadet인지 판별해야함.
+			isCadet := true
+			return isCadet
+		}
+		if isValidMember(m) == true {
+			repo.StudyMember = append(repo.StudyMember, string(m))
+		}
+	}
+	log.Println(repo.StudyMember)
 }
 
 func GetReportInfo(filename string) *ReportInfo {
 	info, _ := os.Stat(filename)
 	reportInfo := &ReportInfo{}
 	reportInfo.ParseDate(DecodeFileName(info.Name()))
-	reportInfo.ParseReport(filename)
+
+	fileRawData, err := ioutil.ReadFile(filename)
+	check(err)
+	reportInfo.ParseStudyTime(fileRawData)
+	reportInfo.ParseStudyTheme(fileRawData)
+	reportInfo.ParseStudyMember(fileRawData)
 	return nil
 }
 
 func GetReport(intraID string) { //*ReportInfo {
 	//	files, err := filepath.Glob(wikiRepoPath + intraID + "/20[0-9]{2}[.-, ]?[0-9]{2}[.-, ]?[0-9]{2}*.md")
 	files, err := filepath.Glob(wikiRepoPath + intraID + "/*.md")
-
-	log.Println("Get report")
-	if err != nil {
-		log.Fatalf("err: %v\n", err)
-	}
+	check(err)
 	//	var reportInfo []ReportInfo
 	for i := range files {
 		//log.Printf("file: %v\n", files[i])
+		log.Printf("filename: %s", files[i])
 		GetReportInfo(files[i])
 	}
 
