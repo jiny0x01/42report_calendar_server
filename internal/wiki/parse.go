@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strconv"
 	"unicode/utf8"
+
+	"github.com/jinykim0x80/42report_calender_server/internal/wiki"
 )
 
 /*
@@ -45,7 +47,7 @@ type ReportInfo struct {
 	StudyMember []string `json:"studyMember"`
 }
 
-func check(e error) {
+func CheckIfError(e error) {
 	if e != nil {
 		log.Println(e)
 		panic(e)
@@ -154,7 +156,7 @@ func (repo *ReportInfo) ParseStudyTheme(fileRawData []byte) {
 	//	log.Printf("\t extracted data %s\n", fileRawData[startIndex[1]:endIndex[0]])
 	m := regexp.MustCompile(`(\* ?|- ?|# ?|\+ ?|\d\.|/)`)
 	repo.StudyTheme = string(m.ReplaceAll(fileRawData[startIndex[1]:endIndex[0]], []byte("")))
-	//	log.Printf("\t extracted data %s", repo.StudyTheme)
+	log.Printf("\t extracted data %s", repo.StudyTheme)
 }
 
 func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
@@ -188,50 +190,52 @@ func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
 	log.Println(repo.StudyMember)
 }
 
-func GetReportInfo(filename string) *ReportInfo {
+func ParseReportInfo(filename string) ReportInfo {
 	info, _ := os.Stat(filename)
-	reportInfo := &ReportInfo{}
+	reportInfo := ReportInfo{}
 	reportInfo.ParseDate(DecodeFileName(info.Name()))
 
 	fileRawData, err := ioutil.ReadFile(filename)
-	check(err)
+	CheckIfError(err)
 	reportInfo.ParseStudyTime(fileRawData)
 	reportInfo.ParseStudyTheme(fileRawData)
 	reportInfo.ParseStudyMember(fileRawData)
-	return nil
+	return reportInfo
 }
 
-func GetReport(intraID string) { //*ReportInfo {
+func ShowReportInfo(repo []ReportInfo) {
+	log.Println("======Result")
+	for i, r := range repo {
+		log.Printf("%dth report info\n", i)
+		log.Printf("\tyear: %d\n", r.Year)
+		log.Printf("\tMonth: %d\n", r.Month)
+		log.Printf("\tDate: %d\n", r.Date)
+		log.Printf("\tDay: %d\n", r.Day)
+		log.Printf("\tStudyTime: %d\n", r.StudyTime)
+		log.Printf("\tStudyTheme: %s\n", r.StudyTheme)
+		log.Printf("\tStudyMember: %s\n\n", r.StudyMember)
+	}
+}
+
+func GetReport(intraID string) []ReportInfo {
 	//	files, err := filepath.Glob(wikiRepoPath + intraID + "/20[0-9]{2}[.-, ]?[0-9]{2}[.-, ]?[0-9]{2}*.md")
+	if wiki.SearchPublicRepoRepository(intraID) == false {
+		return nil
+	}
+
 	files, err := filepath.Glob(wikiRepoPath + intraID + "/*.md")
-	check(err)
+	if files == nil {
+		log.Println("file empty")
+		return nil
+	}
+	CheckIfError(err)
 	//	var reportInfo []ReportInfo
+	var repo []ReportInfo
 	for i := range files {
 		//log.Printf("file: %v\n", files[i])
 		log.Printf("filename: %s", files[i])
-		GetReportInfo(files[i])
+		repo = append(repo, ParseReportInfo(files[i]))
 	}
 
+	return repo
 }
-
-/*
-func ParseDate(intraID string) bool {
-	if _, err := os.Stat(wikiRepoPath + intraID); os.IsNotExist(err) {
-		log.Printf("Not exist [%v] repo", intraID)
-		return false
-	}
-
-	return true
-}
-*/
-
-/* 학습시간
-24시형
-\d\d?:\d\d? ?(-|~) ?\d\d?:?\d?\d?
-
-am/pm형
-// \d\d?(am|pm).*\d\d?
-
-시간형
-\d\d? ?시간
-*/
