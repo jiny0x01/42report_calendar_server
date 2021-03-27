@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"unicode/utf8"
-
-	"github.com/jinykim0x80/42report_calender_server/internal/wiki"
 )
 
 /*
@@ -47,11 +45,12 @@ type ReportInfo struct {
 	StudyMember []string `json:"studyMember"`
 }
 
-func CheckIfError(e error) {
+func CheckIfError(e error) bool {
 	if e != nil {
 		log.Println(e)
-		panic(e)
+		return false
 	}
+	return true
 }
 
 func (repo *ReportInfo) ParseDate(filename string) {
@@ -156,7 +155,7 @@ func (repo *ReportInfo) ParseStudyTheme(fileRawData []byte) {
 	//	log.Printf("\t extracted data %s\n", fileRawData[startIndex[1]:endIndex[0]])
 	m := regexp.MustCompile(`(\* ?|- ?|# ?|\+ ?|\d\.|/)`)
 	repo.StudyTheme = string(m.ReplaceAll(fileRawData[startIndex[1]:endIndex[0]], []byte("")))
-	log.Printf("\t extracted data %s", repo.StudyTheme)
+	//log.Printf("\t extracted data %s", repo.StudyTheme)
 }
 
 func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
@@ -165,14 +164,14 @@ func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
 	endMatcher := regexp.MustCompile(`(\*|_|#)*학습 ?목표`)
 	endIndex := endMatcher.FindIndex(fileRawData)
 	if startIndex == nil || endIndex == nil {
-		log.Println("index is nil")
+		//log.Println("index is nil")
 		repo.StudyMember = nil
 		return
 	}
 	memberMatcher := regexp.MustCompile(`[a-z]{2,8}`)
 	member := memberMatcher.FindAll(fileRawData[startIndex[1]:endIndex[0]], -1)
 	if member == nil {
-		log.Println("member is nil")
+		//log.Println("member is nil")
 		repo.StudyMember = nil
 		return
 	}
@@ -187,7 +186,7 @@ func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
 			repo.StudyMember = append(repo.StudyMember, string(m))
 		}
 	}
-	log.Println(repo.StudyMember)
+	//log.Println(repo.StudyMember)
 }
 
 func ParseReportInfo(filename string) ReportInfo {
@@ -195,8 +194,7 @@ func ParseReportInfo(filename string) ReportInfo {
 	reportInfo := ReportInfo{}
 	reportInfo.ParseDate(DecodeFileName(info.Name()))
 
-	fileRawData, err := ioutil.ReadFile(filename)
-	CheckIfError(err)
+	fileRawData, _ := ioutil.ReadFile(filename)
 	reportInfo.ParseStudyTime(fileRawData)
 	reportInfo.ParseStudyTheme(fileRawData)
 	reportInfo.ParseStudyMember(fileRawData)
@@ -217,25 +215,22 @@ func ShowReportInfo(repo []ReportInfo) {
 	}
 }
 
-func GetReport(intraID string) []ReportInfo {
-	//	files, err := filepath.Glob(wikiRepoPath + intraID + "/20[0-9]{2}[.-, ]?[0-9]{2}[.-, ]?[0-9]{2}*.md")
-	if wiki.SearchPublicRepoRepository(intraID) == false {
-		return nil
+func GetReport(intraID string) ([]ReportInfo, error) {
+	if ok, err := SearchPublicRepoRepository(intraID); ok == false {
+		return nil, err
 	}
 
 	files, err := filepath.Glob(wikiRepoPath + intraID + "/*.md")
-	if files == nil {
+	if ok := CheckIfError(err); ok == false {
+		return nil, err
+	} else if files == nil {
 		log.Println("file empty")
-		return nil
-	}
-	CheckIfError(err)
-	//	var reportInfo []ReportInfo
-	var repo []ReportInfo
-	for i := range files {
-		//log.Printf("file: %v\n", files[i])
-		log.Printf("filename: %s", files[i])
-		repo = append(repo, ParseReportInfo(files[i]))
+		return nil, nil
 	}
 
-	return repo
+	var repo []ReportInfo
+	for i := range files {
+		repo = append(repo, ParseReportInfo(files[i]))
+	}
+	return repo, nil
 }

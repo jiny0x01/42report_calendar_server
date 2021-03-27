@@ -10,60 +10,81 @@ import (
 
 const wikiRepoPath = "../../web/wiki/"
 
-func ClearRepo(intraID string) {
-	os.RemoveAll(wikiRepoPath + intraID)
+func ClearRepo(intraID string) error {
+	err := os.RemoveAll(wikiRepoPath + intraID)
+	if ok := CheckIfError(err); ok == false {
+		return err
+	}
+	return nil
 }
 
-func CloneWiki(intraID, repoURL string) bool {
-	if _, err := os.Stat(wikiRepoPath + intraID); os.IsExist(err) {
-		log.Printf("Alrady exist [%v] repo", intraID)
-		return true
-	}
-
+func CloneWiki(intraID, repoURL string) error {
 	_, err := git.PlainClone(wikiRepoPath+intraID, false, &git.CloneOptions{
-		URL:      repoURL,
-		Progress: os.Stdout,
+		URL: repoURL,
 	})
 
-	CheckIfError(err)
-	return true
+	if ok := CheckIfError(err); ok == false {
+		return err
+	}
+	return nil
 }
 
-func PullWiki(intraID string) bool {
+func PullWiki(intraID string) error {
+	log.Printf("%s wiki git pulling\n", intraID)
 	r, err := git.PlainOpen(wikiRepoPath + intraID)
-	CheckIfError(err)
-	if err != nil {
-		log.Fatalln(err)
-		return false
+	if ok := CheckIfError(err); ok == false {
+		return err
 	}
-	// Todo Implement
 
-	return true
+	w, err := r.Worktree()
+	if ok := CheckIfError(err); ok == false {
+		return err
+	}
+
+	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+	if ok := CheckIfError(err); ok == false {
+		return err
+	}
+	return nil
 }
 
 func AppendRepoSuffix(repoURL string) string {
 	return strings.Replace(repoURL, "report", "report.wiki", 1)
 }
 
-func SearchPublicRepoRepository(intraID string) bool {
+func SearchPublicRepoRepository(intraID string) (bool, error) {
+	exist, err := os.Stat(wikiRepoPath + intraID)
+	if exist != nil {
+		log.Printf("%s local directory found. Try git pulling\n", intraID)
+		PullWiki(intraID)
+		return true, nil
+	}
+
 	url := "http://git.innovationacademy.kr:3000" // API base URL
 	client, err := gitea.NewClient(url)
-	if err != nil {
-		log.Println(err)
+	if ok := CheckIfError(err); ok == false {
+		return false, err
 	}
 	repo, res, err := client.GetRepo(intraID, "report")
-	if res.StatusCode == 200 && err != nil {
-		log.Fatal("Fail to search report")
-		return false
+	if ok := CheckIfError(err); ok == false {
+		return false, err
+	} else if res.StatusCode != 200 {
+		log.Println("Fail to search report")
+		return false, nil
 	}
-	log.Printf("repo ID: %v\n", repo.ID)
-	log.Printf("repo Owner: %v\n", repo.Owner.UserName)
-	log.Printf("repo private: %v\n", repo.Private)
-	log.Printf("repo HasWiki: %v\n", repo.HasWiki)
-	log.Printf("repo cloneURL: %v\n", repo.CloneURL)
+	/*
+		log.Printf("res status: %d\n", res.StatusCode)
+		log.Printf("repo ID: %v\n", repo.ID)
+		log.Printf("repo Owner: %v\n", repo.Owner.UserName)
+		log.Printf("repo private: %v\n", repo.Private)
+		log.Printf("repo HasWiki: %v\n", repo.HasWiki)
+		log.Printf("repo cloneURL: %v\n", repo.CloneURL)
+	*/
 	wikiRepo := AppendRepoSuffix(repo.CloneURL)
-	log.Printf("repo cloneURL: %v\n", wikiRepo)
-
-	CloneWiki(repo.Owner.UserName, wikiRepo)
-	return true
+	//	log.Printf("repo cloneURL: %v\n", wikiRepo)
+	err = CloneWiki(repo.Owner.UserName, wikiRepo)
+	if ok := CheckIfError(err); ok == false {
+		return false, err
+	}
+	return true, nil
 }
