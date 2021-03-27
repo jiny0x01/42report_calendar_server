@@ -27,16 +27,20 @@ func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("request id: %s\n", request.Id)
-	report := wiki.GetReport(request.Id)
+	report, _ := wiki.GetReport(request.Id)
 	res := intraIdResponse{Report: report}
 	encoder := json.NewEncoder(w)
 	encoder.Encode(res)
 }
 
+func RootRedirectHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/intra", http.StatusTemporaryRedirect)
+}
+
 func main() {
-	http.HandleFunc("/", SearchIntraIdHandler)
+	http.HandleFunc("/", RootRedirectHandler)
 	http.HandleFunc("/intra", SearchIntraIdHandler)
 	http.ListenAndServe(":"+string(port), nil)
 	log.Printf("Server starting on port:%v\n", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
+	log.Println(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
 }
