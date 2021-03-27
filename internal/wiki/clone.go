@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const wikiRepoPath = "../../web/wiki/"
+const wikiRepoPath = "./wiki/"
 
 func ClearRepo(intraID string) error {
 	err := os.RemoveAll(wikiRepoPath + intraID)
