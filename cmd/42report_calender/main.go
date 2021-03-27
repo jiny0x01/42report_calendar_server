@@ -19,15 +19,13 @@ type intraIdResponse struct {
 }
 
 func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
-	var request intraIdRequest
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&request)
-	if err != nil {
-		http.Error(w, "bad Request", http.StatusBadRequest)
+	param, ok := r.URL.Query()["id"]
+	if !ok || len(param[0]) < 1 {
+		log.Println("Url Param 'id' is missing")
 		return
 	}
-	log.Printf("request id: %s\n", request.Id)
-	report, _ := wiki.GetReport(request.Id)
+	id := param[0]
+	report, _ := wiki.GetReport(id)
 	res := intraIdResponse{Report: report}
 	encoder := json.NewEncoder(w)
 	encoder.Encode(res)
