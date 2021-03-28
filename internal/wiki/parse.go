@@ -36,7 +36,7 @@ case 2:
 
 // 1day
 type ReportInfo struct {
-	Year        int      `json:"date"`  // yyyy
+	Year        int      `json:"year"`  // yyyy
 	Month       int      `json:"Month"` // mm
 	Date        int      `json:"date"`  // dd
 	Day         int      `json:"day"`   // Mon: 1, Tue: 2 ... Sun: 7
@@ -144,7 +144,7 @@ func (repo *ReportInfo) ParseStudyTime(fileRawData []byte) {
 }
 
 func (repo *ReportInfo) ParseStudyTheme(fileRawData []byte) {
-	startMatcher := regexp.MustCompile(`학습 ? 범위 ?및 ?주제(\*|_)*`)
+	startMatcher := regexp.MustCompile(`학습 ? 범위 ?및 ?주제(\*|_)*( :)?`)
 	startIndex := startMatcher.FindIndex(fileRawData)
 	endMatcher := regexp.MustCompile(`(\*|_|#)*동?료? ?학습 ?방법`)
 	endIndex := endMatcher.FindIndex(fileRawData)
@@ -154,8 +154,12 @@ func (repo *ReportInfo) ParseStudyTheme(fileRawData []byte) {
 	}
 	//	log.Printf("\t extracted data %s\n", fileRawData[startIndex[1]:endIndex[0]])
 	m := regexp.MustCompile(`(\* ?|- ?|# ?|\+ ?|\d\.|/)`)
-	repo.StudyTheme = string(m.ReplaceAll(fileRawData[startIndex[1]:endIndex[0]], []byte("")))
-	//log.Printf("\t extracted data %s", repo.StudyTheme)
+	studyTheme := (m.ReplaceAll(fileRawData[startIndex[1]:endIndex[0]], []byte("")))
+	if string(studyTheme[len(studyTheme)-2:]) == "\r\n" {
+		studyTheme = studyTheme[:len(studyTheme)-2]
+	}
+	repo.StudyTheme = string(studyTheme)
+	//	log.Printf("\t extracted data %s", repo.StudyTheme)
 }
 
 func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
@@ -232,5 +236,6 @@ func GetReport(intraID string) ([]ReportInfo, error) {
 	for i := range files {
 		repo = append(repo, ParseReportInfo(files[i]))
 	}
+	//	ShowReportInfo(repo)
 	return repo, nil
 }
