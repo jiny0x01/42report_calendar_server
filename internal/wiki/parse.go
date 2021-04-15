@@ -173,24 +173,36 @@ func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
 		return
 	}
 	memberMatcher := regexp.MustCompile(`[a-z]{2,8}`)
-	member := memberMatcher.FindAll(fileRawData[startIndex[1]:endIndex[0]], -1)
-	if member == nil {
+	bytes := memberMatcher.FindAll(fileRawData[startIndex[1]:endIndex[0]], -1)
+	if bytes == nil {
 		//log.Println("member is nil")
 		repo.StudyMember = nil
 		return
 	}
-	for _, m := range member {
-		// 나중에 goroutine으로 처리
-		isValidMember := func(_m []byte) bool {
-			// 42 API에서 유효한 Cadet인지 판별해야함.
-			isCadet := true
-			return isCadet
-		}
-		if isValidMember(m) == true {
-			repo.StudyMember = append(repo.StudyMember, string(m))
-		}
+	var member []string
+	for _, m := range bytes {
+		member = append(member, string(m))
 	}
-	//log.Println(repo.StudyMember)
+	//	log.Printf("before filtered member: %v\n", member)
+	var err error
+	repo.StudyMember, err = CheckValid(member)
+	if err != nil {
+		log.Println(err)
+	}
+	//	log.Printf("after filtered member: %v\n", repo.StudyMember)
+	/*
+		for _, m := range member {
+			// 나중에 goroutine으로 처리
+			isValidMember := func(_m []byte) bool {
+				// 42 API에서 유효한 Cadet인지 판별해야함.
+				isCadet := true
+				return isCadet
+			}
+			if isValidMember(m) == true {
+				repo.StudyMember = append(repo.StudyMember, string(m))
+			}
+		}
+	*/
 }
 
 func ParseReportInfo(filename string) ReportInfo {
