@@ -7,5 +7,6 @@ WORKDIR src
 RUN go build -o 42report_calender_server
 
 EXPOSE 443
+EXPOSE 80 
 
 CMD ["./42report_calender_server"]
