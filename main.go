@@ -6,9 +6,10 @@ import (
 	"github.com/jinykim0x80/42report_calender_server/internal/wiki"
 	"log"
 	"net/http"
+	"os"
 )
 
-const port = 443
+const port = 80
 
 type intraIdRequest struct {
 	Id string `json:"id"`
@@ -35,10 +36,27 @@ func RootRedirectHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/intra", http.StatusTemporaryRedirect)
 }
 
+func HTTPSecureRedirectHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "https://localhost:443"+r.RequestURI, http.StatusMovedPermanently)
+}
+
+func StartHTTPSecureServer(port int) {
+	log.Printf("HTTPS Server starting on port:%v\n", port)
+	err := http.ListenAndServeTLS(fmt.Sprintf(":%v", port), "./cert/server.pem", "./cert/server.private.key", nil)
+	if err != nil {
+		log.Printf("Fail HTTPS Server init. err:%v\n", err)
+		os.Exit(0)
+	}
+}
+
+func StartHTTPServer(port int) {
+	log.Printf("HTTP Server starting on port:%v\n", port)
+	go http.ListenAndServe(fmt.Sprintf(":%v", port), http.HandlerFunc(HTTPSecureRedirectHandler))
+}
+
 func main() {
 	http.HandleFunc("/", RootRedirectHandler)
 	http.HandleFunc("/intra", SearchIntraIdHandler)
-	http.ListenAndServe(":"+string(port), nil)
-	log.Printf("Server starting on port:%v\n", port)
-	log.Println(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
+	StartHTTPServer(80)
+	StartHTTPSecureServer(443)
 }
