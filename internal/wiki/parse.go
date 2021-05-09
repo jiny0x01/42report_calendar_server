@@ -184,11 +184,12 @@ func (repo *ReportInfo) ParseStudyMember(fileRawData []byte) {
 		member = append(member, string(m))
 	}
 	//	log.Printf("before filtered member: %v\n", member)
-	var err error
-	repo.StudyMember, err = CheckValid(member)
-	if err != nil {
-		log.Println(err)
-	}
+	repo.StudyMember = member
+	//	var err error
+	//	repo.StudyMember, err = CheckValid(member)
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
 	//	log.Printf("after filtered member: %v\n", repo.StudyMember)
 	/*
 		for _, m := range member {
