@@ -232,7 +232,7 @@ func ShowReportInfo(repo []ReportInfo) {
 }
 
 func GetReport(intraID string) ([]ReportInfo, error) {
-	if ok, err := SearchPublicRepoRepository(intraID); ok == false {
+	if ok, err := SearchPublicRepoRepository(intraID); ok == false || err != nil {
 		return nil, err
 	}
 
@@ -249,5 +249,6 @@ func GetReport(intraID string) ([]ReportInfo, error) {
 		repo = append(repo, ParseReportInfo(files[i]))
 	}
 	//	ShowReportInfo(repo)
+	log.Println("Repo found")
 	return repo, nil
 }
