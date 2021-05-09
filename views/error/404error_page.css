@@ -1,0 +1,224 @@
+/******************** top-header ******************/
+
+.main-logo {
+	margin: 0;
+	padding: 2% 7%;
+}
+
+.top-header {
+	background-color: #000;
+	height: 110px;
+	width: 100%;
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	left: 0;
+	border-bottom: 0.3px solid;
+	border-bottom-color: #00b9ba;
+	box-sizing: border-box;
+	/*안쪽 border line*/
+}
+
+.top-header2 {
+	background-color: #000;
+	height: 100%;
+	margin: 0 0 0 50px;
+	border-bottom: 4px solid;
+	border-bottom-color: #00b9ba;
+	box-sizing: border-box;
+	float: left;
+}
+
+.top-header3 {
+	background-color: #000;
+	height: 100%;
+	width: 50%;
+	min-width: 630px;
+	padding: 40px 0 10px 250px;
+	border-bottom: 4px solid;
+	border-bottom-color: #00b9ba;
+	box-sizing: border-box;
+	color: white;
+	font-size: 35px;
+}
+
+.site-detail {
+	float: right;
+	color: #f7f7f7;
+	/*font-size: 1vw;
+    margin: 30px;
+    padding: 0;*/
+	width: 60%;
+	height: 90%;
+}
+
+/********************core*******************/
+
+body {
+	background-color: #000000;
+	font-family: source-sans-pro, sans-serif;
+}
+
+
+.box-title {
+	margin: 10px 20px 0 20px;
+	padding: 10px 0px;
+	font-size: 30px;
+	color: #000000;
+}
+
+
+
+.title {
+	font-weight: 400;
+	padding: 0 30px 30px 30px;
+	font-size: 17px;
+	color: #fff;
+}
+
+
+
+.bottom-box {
+	margin: 0;
+	padding: 20px 30px 0px 30px;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #f7f7f7;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+	font-size: 15px;
+	color: #f7f7f7;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+
+/****************calendar******************/
+.calendar-box2 {
+	margin: 0px 70px 0 70px;
+}
+
+.calendar-box {
+	position: center;
+	margin: 20px auto 50px;
+	padding: 30px 50px;
+	background-color: #f7f7f7;
+	border-radius: 10px;
+	border: solid;
+	border-color: #00b9ba;
+	box-sizing: border-box;
+	width: 76vw;
+}
+
+#calendar {
+	max-width: 120%;
+	margin: 5% auto;
+}
+
+.fc-event-title.fc-sticky {
+	white-space: normal;
+}
+
+/****************bar-graph******************/
+.bar-body {
+	padding: 20px;
+	margin: 0 10%;
+}
+
+.bar-graph {
+	height: 40px;
+	background-color: #fff;
+	border-radius: 20px;
+}
+
+.bar-graph span {
+	display: block;
+	padding: 0 10px;
+	width: 60%;
+	/*주차별 완성도 계산해서 넣기*/
+	height: 40px;
+	line-height: 40px;
+	text-align: right;
+	background-color: #00b9ba;
+	border-radius: 20px;
+	box-sizing: border-box;
+	color: #fff;
+	animation: stack 2s 1;
+}
+
+@keyframes stack {
+	0% {
+		width: 0;
+		color: rgba(255, 255, 255, 0);
+	}
+
+	40% {
+		color: rgba(255, 255, 255, 1);
+	}
+
+	100% {
+		width: 60%;
+	}
+}
+
+/**************** line-graph ******************/
+.header-margin {
+	/* background-color: #f7f7f7; */
+	margin: 150px 5vw 0vw;
+	padding: 0vw 0vw;
+	/* min-width: 1305px; */
+}
+
+.line-graph {
+	display: inline-block;
+	margin: 0;
+	margin-left: 7%;
+	padding: 2%;
+	background-color: #f7f7f7;
+	border-radius: 10px;
+	border: solid;
+	border-color: #00b9ba;
+	box-sizing: border-box;
+	width: 64%;
+	height: 30vw;
+	/* max-width: 50vw; */
+	/* min-width: 40vw; */
+}
+
+/**************** pie-graph ******************/
+
+.pie-graph {
+	display: inline-block;
+	margin: 0;
+	margin-right: 5%;
+	padding: 2%;
+	background-color: #f7f7f7;
+	border-radius: 10px;
+	border: solid;
+	border-color: #00b9ba;
+	box-sizing: border-box;
+	width: 23%;
+	height: 30vw;
+	/* max-width: 30%; */
+	/*min-width: 40%; */
+	float: right;
+}
+
+#myChartTwo {
+	/* height: 23vw; */
+	/* width: 20vw; */
+	position: center;
+}
+
+/**************** list ******************/
+.list-box {
+	margin: 20px 50px 50px;
+	padding: 30px 0px;
+	background-color: #f7f7f7;
+	border-radius: 10px;
+	border: solid;
+	border-color: #00b9ba;
+	box-sizing: border-box;
+	min-width: 1305px;
+}

@@ -1,0 +1,18 @@
+fdescribe('', function() {
+  pushOptions({
+    initialDate: ''
+  })
+
+  describe('', function() {
+    pushOptions({
+      initialView: ''
+    })
+
+    fit('', function() {
+      initCalendar({
+        // other options
+      })
+    })
+  })
+
+})
