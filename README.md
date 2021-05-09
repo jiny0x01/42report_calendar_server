@@ -12,16 +12,19 @@ View report to calender [42report.today](http://42report.today)
 > sudo docker run -it --rm --network report\_net -p 80:80 42report\_calender
 
 ## Tech Stack
-+ go 1.15
-	+ rpc
-	+ net/http
-	+ encoding/json
-	+ git
-	+ gitea API 
-	+ 42 API
-	+ etc..
-+ docker
-+ AWS ec2
++ Language 
+	+ go 1.15
+		+ rpc
+		+ net/http
+		+ encoding/json
+		+ git
+		+ gitea API 
+		+ 42 API
+		+ etc..
++ Build
+	+ docker
++ Deploy
+	+ AWS ec2
 
 ## Writting about This Project
 + [Go 서버 애플리케이션을 Docker로 AWS EC2에 배포](https://cafemocamoca.tistory.com/309)
