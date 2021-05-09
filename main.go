@@ -19,7 +19,7 @@ type intraIdResponse struct {
 }
 
 func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/index.html")
+	http.ServeFile(w, r, "views/index.html")
 	param, ok := r.URL.Query()["id"]
 	if !ok || len(param[0]) < 1 {
 		w.Write([]byte("not found user"))
@@ -30,7 +30,7 @@ func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
 	res := intraIdResponse{Report: report}
 	encoder := json.NewEncoder(w)
 	encoder.Encode(res)
-	http.ServeFile(w, r, "static/index.html")
+	http.ServeFile(w, r, "views/index.html")
 }
 
 func RootRedirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,12 +58,12 @@ func StartHTTPServer(port int) {
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
 
-	http.ServeFile(w, r, "static/index.html")
+	http.ServeFile(w, r, "views/index.html")
 }
 
 func main() {
 	//	http.HandleFunc("/", RootHandler)
-	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("static"))))
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("views"))))
 	http.HandleFunc("/intra", SearchIntraIdHandler)
 	StartHTTPServer(80)
 	//	StartHTTPSecureServer(443)
