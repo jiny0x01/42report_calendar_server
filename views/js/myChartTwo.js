@@ -59,22 +59,7 @@ export function ChartCreate2() {
                 animateScale: true,
                 animateRotate: true
             },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        padding: 7,
-                        stepSize: 1,
-                    }
-                }],
-                xAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        padding: 7,
-                        stepSize: 1,
-                    }
-                }]
-            }
+            
         },
 
 

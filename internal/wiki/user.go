@@ -11,7 +11,7 @@ type ValidUsers struct {
 }
 
 func CheckValid(users []string) ([]string, error) {
-	client, err := rpc.Dial("tcp", "localhost:8081")
+	client, err := rpc.Dial("tcp", "42report.today:8081")
 	if err != nil {
 		return nil, err
 	}

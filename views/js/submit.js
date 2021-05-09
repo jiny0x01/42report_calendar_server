@@ -70,7 +70,7 @@ if (window.location.href.indexOf("id") > 0)
         "공개된 report가 없거나 해당 IntraID를 찾을 수 없습니다.ㅜㅜ \n report의 공개 범위를 public으로 전환해주세요. \nhttp://git.innovationacademy.kr";
       document.getElementsByClassName("calendar-box")[0].style.marginBottom =
         "200px";
-      document.getElementsByClassName("calendar-box")[0].innerHTML = "<img src=\"/img/tutorial.png\" />";
+      document.getElementsByClassName("calendar-box")[0].innerHTML = "<img src=\"/img/tutorial.png\" style=\"max-width: 100%; height: auto;\" />";
       document.getElementsByClassName("content")[0].hidden = true;
     });
 else {
