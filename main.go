@@ -7,9 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	//	"text/template"
 )
-
-const port = 80
 
 type intraIdRequest struct {
 	Id string `json:"id"`
@@ -20,9 +19,10 @@ type intraIdResponse struct {
 }
 
 func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/index.html")
 	param, ok := r.URL.Query()["id"]
 	if !ok || len(param[0]) < 1 {
-		log.Println("Url Param 'id' is missing")
+		w.Write([]byte("not found user"))
 		return
 	}
 	id := param[0]
@@ -30,6 +30,7 @@ func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
 	res := intraIdResponse{Report: report}
 	encoder := json.NewEncoder(w)
 	encoder.Encode(res)
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func RootRedirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -51,12 +52,19 @@ func StartHTTPSecureServer(port int) {
 
 func StartHTTPServer(port int) {
 	log.Printf("HTTP Server starting on port:%v\n", port)
-	go http.ListenAndServe(fmt.Sprintf(":%v", port), http.HandlerFunc(HTTPSecureRedirectHandler))
+	//	go http.ListenAndServe(fmt.Sprintf(":%v", port), http.HandlerFunc(HTTPSecureRedirectHandler))
+	http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
+}
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func main() {
-	http.HandleFunc("/", RootRedirectHandler)
+	//	http.HandleFunc("/", RootHandler)
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/intra", SearchIntraIdHandler)
 	StartHTTPServer(80)
-	StartHTTPSecureServer(443)
+	//	StartHTTPSecureServer(443)
 }
