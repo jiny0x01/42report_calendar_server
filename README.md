@@ -2,7 +2,7 @@
 View report to calender [42report.today](http://42report.today)
 ![demo.png](./img/demo.png)
 
-## Build
+## Build & Run
 > git clone https://github.com/jinykim0x80/42report\_calender\_server && cd 42report\_calender\_server
 
 > sudo docker build -t 42report\_calender .
