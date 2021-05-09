@@ -2,6 +2,7 @@
 View report to calender [42report.today](http://42report.today)
 ![demo.png](./img/demo.png)
 
+Related Repository [42api\_gateway](https://github.com/jinykim0x80/42api_gateway)
 ## Build & Run
 > git clone https://github.com/jinykim0x80/42report\_calender\_server && cd 42report\_calender\_server
 
