@@ -10,16 +10,16 @@ if (window.location.href.indexOf("id").length > 0)
   fetch("http://42report.today/intra?id=" + searchName, {})
     .then((response) => {
       console.log("response", response);
-      if (response == []) {
-        console.log("failed asd", ex, searchName);
-        document.getElementsByClassName("calendar-div")[0].innerText =
-          "공개된 report가 없거나 해당 IntraID를 찾을 수 없습니다.ㅜㅜ \n report의 공개 범위를 public으로 전환해주세요. \nhttp://git.innovationacademy.kr";
-        document.getElementsByClassName("calendar-div")[0].style.marginBottom =
-          "400px";
-        document.getElementsByClassName("calendar-box")[0].hidden = true;
-        document.getElementsByClassName("content")[0].hidden = true;
-        return null;
-      }
+      // if (response == []) {
+      //   console.log("failed asd", ex, searchName);
+      //   document.getElementsByClassName("calendar-div")[0].innerText =
+      //     "공개된 report가 없거나 해당 IntraID를 찾을 수 없습니다.ㅜㅜ \n report의 공개 범위를 public으로 전환해주세요. \nhttp://git.innovationacademy.kr";
+      //   document.getElementsByClassName("calendar-div")[0].style.marginBottom =
+      //     "400px";
+      //   document.getElementsByClassName("calendar-box")[0].hidden = true;
+      //   document.getElementsByClassName("content")[0].hidden = true;
+      //   return null;
+      // }
       return response.text();
     })
     .then((text) => {
