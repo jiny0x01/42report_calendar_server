@@ -97,6 +97,9 @@ func StudyTimeStamp2Minute(studyTime []byte) int {
 	studyTimeStamp := timeStampMatcher.FindAll(studyTime, 2)
 
 	timeMatcher := regexp.MustCompile(`\d\d?`)
+	if len(studyTimeStamp) != 2 {
+		return 0
+	}
 	startTime := timeMatcher.FindAll(studyTimeStamp[0], 2)
 	endTime := timeMatcher.FindAll(studyTimeStamp[1], 2)
 
@@ -250,6 +253,5 @@ func GetReport(intraID string) ([]ReportInfo, error) {
 		repo = append(repo, ParseReportInfo(files[i]))
 	}
 	//	ShowReportInfo(repo)
-	log.Println("Repo found")
 	return repo, nil
 }

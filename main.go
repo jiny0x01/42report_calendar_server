@@ -28,7 +28,6 @@ func SearchIntraIdHandler(w http.ResponseWriter, r *http.Request) {
 	id := param[0]
 	report, _ := wiki.GetReport(id)
 	res := intraIdResponse{Report: report}
-	log.Printf("repo response: %v\n", res)
 	encoder := json.NewEncoder(w)
 	encoder.Encode(res)
 	//	http.ServeFile(w, r, "views/index.html")
