@@ -1,5 +1,6 @@
 # 42report\_calender\_server
 View report to calender [42report.today](http://42report.today)
+![demo.png](./img/demo.png)
 
 ## Build
 > git clone https://github.com/jinykim0x80/42report\_calender\_server && cd 42report\_calender\_server
@@ -21,6 +22,9 @@ View report to calender [42report.today](http://42report.today)
 	+ etc..
 + docker
 + AWS ec2
+
+## Writting about This Project
++ [Go 서버 애플리케이션을 Docker로 AWS EC2에 배포](https://cafemocamoca.tistory.com/309)
 
 ## Front-end
 [front-end-github](https://github.com/Mins97/42-Report-Calendar)
