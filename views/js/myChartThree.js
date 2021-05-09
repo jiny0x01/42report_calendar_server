@@ -54,7 +54,7 @@ export function ChartCreate3() {
                 ],
                 borderColor: 'rgba(0, 185, 186, 1)',
                 borderWidth: 2,
-                label: '연도별 학습시간입니다',
+                label: '연도별 학습시간입니다(단위: 분)',
             }]
         },
         options: {

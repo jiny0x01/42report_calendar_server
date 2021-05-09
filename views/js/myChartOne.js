@@ -50,7 +50,7 @@ export function ChartCreate1() {
                     ],
                     borderColor: 'rgba(0, 185, 186, 1)',
                     borderWidth: 2,
-                    label: '매주 주차별 학습시간입니다',
+                    label: '매주 주차별 학습시간입니다(단위: 분)',
                 }]
             },
             options: {
