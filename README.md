@@ -5,7 +5,9 @@ View report to calender [42report.today](http://42report.today)
 > git clone https://github.com/jinykim0x80/42report\_calender\_server && cd 42report\_calender\_server
 
 > sudo docker build -t 42report\_calender .
+
 > sudo docker network create report\_net 
+
 > sudo docker run -it --rm --network report\_net -p 80:80 42report\_calender
 
 ## Tech Stack
