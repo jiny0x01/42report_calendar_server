@@ -29,6 +29,7 @@ Related Repository [42api\_gateway](https://github.com/jinykim0x80/42api_gateway
 
 ## Writting about This Project
 + [Go 서버 애플리케이션을 Docker로 AWS EC2에 배포](https://cafemocamoca.tistory.com/309)
++ [AWS 도메인 연결과 Docker 컨테이너 통신](https://cafemocamoca.tistory.com/310?category=1161650)
 
 ## Front-end
 [front-end-github](https://github.com/Mins97/42-Report-Calendar)
