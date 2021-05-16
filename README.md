@@ -1,16 +1,16 @@
-# 42report\_calender\_server
-View report to calender [42report.today](http://42report.today)
+# 42report\_calendar\_server
+View report to calendar [42report.today](http://42report.today)
 ![demo.png](./img/demo.png)
 
 Related Repository [42api\_gateway](https://github.com/jinykim0x80/42api_gateway)
 ## Build & Run
-> git clone https://github.com/jinykim0x80/42report\_calender\_server && cd 42report\_calender\_server
+> git clone https://github.com/jinykim0x80/42report\_calendar\_server && cd 42report\_calendar\_server
 
-> sudo docker build -t 42report\_calender .
+> sudo docker build -t 42report\_calendar .
 
 > sudo docker network create report\_net 
 
-> sudo docker run -it --rm --network report\_net -p 80:80 42report\_calender
+> sudo docker run -it --rm --network report\_net -p 80:80 42report\_calendar
 
 ## Tech Stack
 + Language 
