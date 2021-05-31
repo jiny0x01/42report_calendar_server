@@ -33,7 +33,3 @@ Related Repository [42api\_gateway](https://github.com/jinykim0x80/42api_gateway
 
 ## Front-end
 [front-end-github](https://github.com/Mins97/42-Report-Calendar)
-
-### Contributer
-+ [Mins97](https://github.com/Mins97)
-+ [najeong12](https://github.com/najeong12)
